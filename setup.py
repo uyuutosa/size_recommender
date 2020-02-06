@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="size_recommender",
-    version="0.0.2",
-    install_requires=["pandas", "numpy", "pytest"],
+    version="0.0.3",
+    install_requires=["pandas", "numpy", "pytest", "xlrd"],
     author="uyuutosa",
     auther_email="yu@trait.llc",
     license="MIT",
