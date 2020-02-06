@@ -9,18 +9,27 @@ class SizeRecommender:
     def _recommend(self, df, param_dic, required_param_lst):
         c_max = where(["max" in x for x in df.columns ])[0][-1]
         idx_lst = []
+        param_name_lst = []
         for i in range(0, c_max+1, 2):
             n_min, n_max = df.columns[i:i+2]
             result = df[(df[n_min] <= param_dic[n_min.strip("_min")]) == (df[n_max] > param_dic[n_min.strip("_min")])]
             if result.shape[0]:
                 idx_lst += [result.index[0]]
+                param_name_lst += [n_min.strip("_min")]
     
         # extract most frequent value
         a,b = unique(idx_lst, return_counts=True)
-        ret_dic = {}
+        best_dic = {}
+        all_dic = {}
         for p in required_param_lst:
-            ret_dic[p] = df.loc[a[b.argmax()]][p]
-        return ret_dic
+            best_dic[p] = df.loc[a[b.argmax()]][p]
+        for name, idx in zip(param_name_lst, idx_lst):
+            tmp_dic = {}
+            for p in required_param_lst:
+                tmp_dic[p] = df.iloc[idx][p]
+            all_dic[name] = tmp_dic
+
+        return {"best_dic": best_dic, "all_dic": all_dic}
             
     def _get_df(self, sheet_name):
         df = self.f.parse(sheet_name)
@@ -39,7 +48,10 @@ def data_male():
 
 def test_male(data_male):
     sr = SizeRecommender(path="assets/size_chart.xlsx")
-    assert sr.recommend(data_male["param_dic"], "male", ["size"]) == {"size": "M"}
+    truth_value = {"best_dic": {"size": "M"},
+                   "all_dic": {"Height": {"size":"M"}, "Neck": {"size": "M"}, "Chest": {"size":"M"}, "Waist": {"size":"M"}, "Hip": {"size":"S"}}
+                   }
+    assert sr.recommend(data_male["param_dic"], "male", ["size"]) == truth_value
 
 @pytest.fixture()
 def data_female():
@@ -49,4 +61,7 @@ def data_female():
 
 def test_female(data_female):
     sr = SizeRecommender(path="assets/size_chart.xlsx")
-    assert sr.recommend(data_female["param_dic"], "female", ["size"]) == {"size": "L"}
+    truth_value = {"best_dic": {"size": "L"},
+                    "all_dic": {"Height": {"size":"M"}, "Chest": {"size":"L"}, "Waist": {"size":"L"}, "Hip": {"size":"L"}}
+                   }
+    assert sr.recommend(data_female["param_dic"], "female", ["size"]) == truth_value

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="size_recommender",
-    version="0.0.0",
+    version="0.0.1",
     install_requires=["pandas", "numpy"],
     author="uyuutosa",
     auther_email="yu@trait.llc",
