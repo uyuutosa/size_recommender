@@ -38,7 +38,7 @@ def data_male():
     return ret
 
 def test_male(data_male):
-    sr = SizeRecommender(path="size_chart.xlsx")
+    sr = SizeRecommender(path="assets/size_chart.xlsx")
     assert sr.recommend(data_male["param_dic"], "male", ["size"]) == {"size": "M"}
 
 @pytest.fixture()
@@ -48,5 +48,5 @@ def data_female():
     return ret
 
 def test_female(data_female):
-    sr = SizeRecommender(path="size_chart.xlsx")
+    sr = SizeRecommender(path="assets/size_chart.xlsx")
     assert sr.recommend(data_female["param_dic"], "female", ["size"]) == {"size": "L"}
